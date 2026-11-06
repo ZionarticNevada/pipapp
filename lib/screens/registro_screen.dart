@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
+import '../utils/validadores.dart';
 import 'aviso_privacidad_screen.dart';
 
 class RegistroScreen extends StatefulWidget {
@@ -18,22 +19,37 @@ class _RegistroScreenState extends State<RegistroScreen> {
   bool _cargando = false;
 
   Future<void> _registrar() async {
-    if (_pass.text != _pass2.text) {
-      _mensaje('Las contraseñas no coinciden');
+    final correo = _correo.text.trim();
+    if (!Validadores.correoValido(correo)) {
+      _mensaje('Escribe un correo válido');
       return;
     }
     if (_pass.text.length < 6) {
       _mensaje('La contraseña debe tener al menos 6 caracteres');
       return;
     }
+    if (_pass.text != _pass2.text) {
+      _mensaje('Las contraseñas no coinciden');
+      return;
+    }
     setState(() => _cargando = true);
     try {
-      await _auth.registrar(_correo.text.trim(), _pass.text);
+      await _auth.registrar(correo, _pass.text);
       if (mounted) Navigator.pop(context); // AuthGate mostrará la app
     } on FirebaseAuthException catch (e) {
-      _mensaje(e.code == 'email-already-in-use'
-          ? 'Ese correo ya está registrado'
-          : 'No se pudo crear la cuenta (${e.code})');
+      switch (e.code) {
+        case 'email-already-in-use':
+          _mensaje('Ese correo ya está registrado');
+          break;
+        case 'invalid-email':
+          _mensaje('El correo no es válido');
+          break;
+        case 'weak-password':
+          _mensaje('La contraseña es muy débil (mínimo 6 caracteres)');
+          break;
+        default:
+          _mensaje('No se pudo crear la cuenta (${e.code})');
+      }
     } finally {
       if (mounted) setState(() => _cargando = false);
     }
