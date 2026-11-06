@@ -87,7 +87,7 @@ class _LoginScreenState extends State<LoginScreen> {
               constraints: const BoxConstraints(maxWidth: 400),
               child: Column(
                 children: [
-                  const Icon(Icons.water_drop, size: 72, color: Colors.blue),
+                  Image.asset('assets/images/logoEmpresa.png', height: 96),
                   const SizedBox(height: 8),
                   Text('Monitorea tu cisterna,\ncuida el agua',
                       textAlign: TextAlign.center,
