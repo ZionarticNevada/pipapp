@@ -2,8 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'firebase_options.dart';
+import 'screens/home_screen.dart';
 import 'screens/login_screen.dart';
-import 'services/auth_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -40,19 +40,7 @@ class AuthGate extends StatelessWidget {
             body: Center(child: CircularProgressIndicator()));
       }
       if (snap.hasData) {
-        return Scaffold(
-          appBar: AppBar(
-            title: const Text('PipApp'),
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.logout),
-                tooltip: 'Cerrar sesión',
-                onPressed: () => AuthService().cerrarSesion(),
-              ),
-            ],
-          ),
-          body: Center(child: Text('Sesión iniciada como ${snap.data!.email}')),
-        );
+        return const HomeScreen();
       }
       return const LoginScreen();
     },

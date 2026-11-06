@@ -156,3 +156,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 }
+
+// ignore: camel_case_types
+typedef loginPage = LoginScreen;
+typedef LoginPage = LoginScreen;
