@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import '../auth_gate.dart';
 import '../services/auth_service.dart';
 import 'ajustes_screen.dart';
 import 'localizacion_screen.dart';
-import 'login_screen.dart';
 import 'usuario_screen.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -143,7 +143,7 @@ class HomeScreen extends StatelessWidget {
                   if (context.mounted) {
                     Navigator.of(context).pushAndRemoveUntil(
                       MaterialPageRoute(
-                          builder: (context) => const loginPage()),
+                          builder: (context) => const AuthGate()),
                       (route) => false,
                     );
                   }

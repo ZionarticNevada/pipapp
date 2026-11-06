@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import '../auth_gate.dart';
 import '../services/auth_service.dart';
 import 'aviso_privacidad_screen.dart';
 
@@ -34,7 +35,12 @@ class _RegistroScreenState extends State<RegistroScreen> {
         _pass.text,
         nombre: _nombre.text.trim(),
       );
-      if (mounted) Navigator.pop(context); // AuthGate mostrará la app
+      if (mounted) {
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (_) => const AuthGate()),
+          (route) => false,
+        );
+      }
     } on FirebaseAuthException catch (e) {
       _mensaje(e.code == 'email-already-in-use'
           ? 'Ese correo ya está registrado'
