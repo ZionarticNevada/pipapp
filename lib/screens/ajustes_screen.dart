@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import '../auth_gate.dart';
 import '../services/auth_service.dart';
-import 'login_screen.dart';
 
 class AjustesScreen extends StatefulWidget {
   const AjustesScreen({super.key});
@@ -177,7 +177,7 @@ class _AjustesScreenState extends State<AjustesScreen> {
       await _auth.cerrarSesion();
       if (mounted) {
         Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (_) => const LoginScreen()),
+          MaterialPageRoute(builder: (_) => const AuthGate()),
           (route) => false,
         );
       }
