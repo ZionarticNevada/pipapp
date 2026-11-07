@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../auth_gate.dart';
 import '../services/auth_service.dart';
+import '../utils/validadores.dart';
 import 'registro_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -18,6 +19,15 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _cargando = false;
 
   Future<void> _entrar() async {
+    final correo = _correo.text.trim();
+    if (!Validadores.correoValido(correo)) {
+      _mensaje('Escribe un correo válido');
+      return;
+    }
+    if (_pass.text.isEmpty) {
+      _mensaje('Escribe tu contraseña');
+      return;
+    }
     setState(() => _cargando = true);
     try {
       await _auth.iniciarSesion(_correo.text.trim(), _pass.text);
@@ -35,13 +45,14 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _recuperar() async {
-    if (_correo.text.trim().isEmpty) {
-      _mensaje('Escribe tu correo para recuperar la contraseña');
+    if (!Validadores.correoValido(_correo.text)) {
+      _mensaje('Escribe un correo válido');
       return;
     }
     try {
       await _auth.recuperarPassword(_correo.text.trim());
-      _mensaje('Te enviamos un correo para restablecerla');
+      _mensaje(
+          'Si el correo está registrado, recibirás un mensaje para restablecer tu contraseña');
     } on FirebaseAuthException catch (e) {
       _mensaje(_traducir(e.code));
     }
@@ -83,7 +94,7 @@ class _LoginScreenState extends State<LoginScreen> {
               constraints: const BoxConstraints(maxWidth: 400),
               child: Column(
                 children: [
-                  const Icon(Icons.water_drop, size: 72, color: Colors.blue),
+                  Image.asset('assets/images/logoEmpresa.png', height: 96),
                   const SizedBox(height: 8),
                   Text('Monitorea tu cisterna,\ncuida el agua',
                       textAlign: TextAlign.center,
