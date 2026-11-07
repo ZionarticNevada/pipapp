@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import '../auth_gate.dart';
 import '../services/auth_service.dart';
 import '../utils/validadores.dart';
 import 'aviso_privacidad_screen.dart';
@@ -11,6 +12,7 @@ class RegistroScreen extends StatefulWidget {
 }
 
 class _RegistroScreenState extends State<RegistroScreen> {
+  final _nombre = TextEditingController();
   final _correo = TextEditingController();
   final _pass = TextEditingController();
   final _pass2 = TextEditingController();
@@ -34,8 +36,17 @@ class _RegistroScreenState extends State<RegistroScreen> {
     }
     setState(() => _cargando = true);
     try {
-      await _auth.registrar(correo, _pass.text);
-      if (mounted) Navigator.pop(context); // AuthGate mostrará la app
+      await _auth.registrar(
+        _correo.text.trim(),
+        _pass.text,
+        nombre: _nombre.text.trim(),
+      );
+      if (mounted) {
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (_) => const AuthGate()),
+          (route) => false,
+        );
+      }
     } on FirebaseAuthException catch (e) {
       switch (e.code) {
         case 'email-already-in-use':
@@ -60,6 +71,7 @@ class _RegistroScreenState extends State<RegistroScreen> {
 
   @override
   void dispose() {
+    _nombre.dispose();
     _correo.dispose();
     _pass.dispose();
     _pass2.dispose();
@@ -79,10 +91,21 @@ class _RegistroScreenState extends State<RegistroScreen> {
               child: Column(
                 children: [
                   TextField(
+                    controller: _nombre,
+                    textCapitalization: TextCapitalization.words,
+                    decoration: const InputDecoration(
+                      labelText: 'Nombre completo',
+                      prefixIcon: Icon(Icons.person_outline),
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  TextField(
                     controller: _correo,
                     keyboardType: TextInputType.emailAddress,
                     decoration: const InputDecoration(
                         labelText: 'Correo electrónico',
+                        prefixIcon: Icon(Icons.email_outlined),
                         border: OutlineInputBorder()),
                   ),
                   const SizedBox(height: 12),

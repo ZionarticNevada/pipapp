@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import '../auth_gate.dart';
 import '../services/auth_service.dart';
 import '../utils/validadores.dart';
 import 'registro_screen.dart';
@@ -29,7 +30,13 @@ class _LoginScreenState extends State<LoginScreen> {
     }
     setState(() => _cargando = true);
     try {
-      await _auth.iniciarSesion(correo, _pass.text);
+      await _auth.iniciarSesion(_correo.text.trim(), _pass.text);
+      if (mounted) {
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (_) => const AuthGate()),
+          (route) => false,
+        );
+      }
     } on FirebaseAuthException catch (e) {
       _mensaje(_traducir(e.code));
     } finally {
@@ -167,3 +174,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 }
+
+// ignore: camel_case_types
+typedef loginPage = LoginScreen;
+typedef LoginPage = LoginScreen;
