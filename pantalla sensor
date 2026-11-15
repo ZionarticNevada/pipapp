@@ -1,0 +1,70 @@
+#include <WiFi.h>
+#include <WebServer.h>
+
+const char* ssid = "TU_WIFI";
+const char* password = "TU_PASSWORD";
+
+#define TRIG 5
+#define ECHO 18
+
+// Altura interior del tinaco en centímetros
+const float alturaTinaco = 120.0;
+
+WebServer server(80);
+
+float distancia;
+float porcentaje;
+
+void medirAgua() {
+  digitalWrite(TRIG, LOW);
+  delayMicroseconds(2);
+
+  digitalWrite(TRIG, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(TRIG, LOW);
+
+  long duracion = pulseIn(ECHO, HIGH, 30000);
+
+  if (duracion == 0) {
+    server.send(500, "text/plain", "Error de sensor");
+    return;
+  }
+
+  distancia = duracion * 0.0343 / 2;
+
+  porcentaje =
+    ((alturaTinaco - distancia) / alturaTinaco) * 100;
+
+  porcentaje = constrain(porcentaje, 0, 100);
+
+  String respuesta = "{";
+  respuesta += "\"distancia\":";
+  respuesta += String(distancia, 1);
+  respuesta += ",\"nivel\":";
+  respuesta += String(porcentaje, 1);
+  respuesta += "}";
+
+  server.send(200, "application/json", respuesta);
+}
+
+void setup() {
+  Serial.begin(115200);
+
+  pinMode(TRIG, OUTPUT);
+  pinMode(ECHO, INPUT);
+
+  WiFi.begin(ssid, password);
+
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+  }
+
+  Serial.println(WiFi.localIP());
+
+  server.on("/nivel", medirAgua);
+  server.begin();
+}
+
+void loop() {
+  server.handleClient();
+}
