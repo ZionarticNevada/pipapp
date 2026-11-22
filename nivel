@@ -1,0 +1,39 @@
+import okhttp3.*
+import org.json.JSONObject
+import java.io.IOException
+
+val client = OkHttpClient()
+
+fun leerNivel() {
+
+    val url = "http://192.168.1.100/nivel"
+
+    val request = Request.Builder()
+        .url(url)
+        .build()
+
+    client.newCall(request).enqueue(object : Callback {
+
+        override fun onFailure(
+            call: Call,
+            e: IOException
+        ) {
+            println("Error de conexión")
+        }
+
+        override fun onResponse(
+            call: Call,
+            response: Response
+        ) {
+            response.use {
+                val json = JSONObject(it.body!!.string())
+
+                val nivel = json.getDouble("nivel")
+                val distancia = json.getDouble("distancia")
+
+                println("Nivel: $nivel %")
+                println("Distancia: $distancia cm")
+            }
+        }
+    })
+}
